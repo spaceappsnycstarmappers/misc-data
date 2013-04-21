@@ -1,0 +1,18 @@
+# reading the .csv file
+datafile = open('C:\Users\Ahmad\Dropbox\hygxyz_modified.csv, 'r')
+data = []
+for row in datafile:
+    data.append(row.strip().split(','))
+
+from numpy import random,argsort,sqrt
+from pylab import plot,show
+
+def knn_search(x, D, K):
+ """ find K nearest neighbours of data among D """
+ ndata = D.shape[1]
+ K = K if K < ndata else ndata
+ # euclidean distances from the other points
+ sqd = sqrt(((D - x[:,:ndata])**2).sum(axis=0))
+ idx = argsort(sqd) # sorting
+ # return the indexes of K nearest neighbours
+ return idx[:K]
