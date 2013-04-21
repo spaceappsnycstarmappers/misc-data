@@ -89,7 +89,7 @@ f.close()
 # writing directly to a file:
 #scad_render_to_file(u, 'output.scad')
 
-"""
+
 # and now for something completely different:
 # try the .xyz format
 # item count
@@ -98,11 +98,11 @@ f.close()
 xyz = str(len(mock_stars)) + "\n"
 xyz += "this is a test xyz format file with mock data\n"
 
-for star in range(0, len(mock_stars)-1):
+for star in range(0, len(mock_stars)):
     xyz += "H " + " ".join("%10.5f" % x for x in (x*scale for x in mock_stars[star])) + "\n"
 
 ff = open('output.xyz', 'w')
 ff.write(xyz)
 ff.close()
-"""
+
 
