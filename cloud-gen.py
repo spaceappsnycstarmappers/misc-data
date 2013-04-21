@@ -9,13 +9,13 @@ from random import *
 from solid import *
 
 # working on some processing
-#import numpy as np
-#import scipy as sp
-#from scipy import spatial
+import numpy
+import scipy
+from scipy import spatial
 
 # make some fake:
 mock_stars = []
-for i in range(0, 100, 1):
+for i in range(0, 20, 1):
     this_star = []
     for c in range(3):
         this_star.append(random())
@@ -36,6 +36,7 @@ star_base_radius = 3.0
 column_radius = [2.0, 1.0]
 
 # this is the naive 'ball and stick' representation:
+"""
 for i, coord in enumerate(mock_stars):
     #print coord
     scaled_coord = [x*scale for x in coord]
@@ -51,7 +52,29 @@ for i, coord in enumerate(mock_stars):
             )
     model_data.append(s)
 
-u = translate([-scale/2, -scale/2, 0])(union()(model_data)+cube([scale, scale, 2]))
+# combine all model_data and add a base plate, 
+u = translate([-scale/2, -scale/2, 0])(model_data,cube([scale, scale, 2]))
+"""
+
+# trying a more sophisticated model
+neighbors_list = []
+# play with the leafsize here
+star_tree = scipy.spatial.cKDTree(mock_stars,leafsize=100)
+for star in mock_stars:
+    # need to twiddle these dials
+    neighbors = star_tree.query(star,k=2,distance_upper_bound=20)
+    # print neighbors
+    
+    scaled_coord = [x*scale for x in mock_stars[neighbors[1][0]]]
+    # make a column between the current
+    neighbors_list.append(
+            # getting our location, and the distance as the sphere
+            translate(scaled_coord)(sphere(scale*neighbors[0][1]))
+            )
+model_data = neighbors_list
+
+# no need for a base plate here (but may need support)
+u = translate([-scale/2, -scale/2, 0])(model_data)
 
 scad = scad_render(u)
 #print scad
