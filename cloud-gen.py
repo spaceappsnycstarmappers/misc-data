@@ -25,6 +25,42 @@ def mock_data():
 
 #print mock_stars
 
+# read CSV file
+# real data!
+import csv 
+
+ifile  = open('sun_nearest_k_neighbors.csv', "rb")
+reader = csv.reader(ifile)
+
+sun_data = []
+
+rownum = 0
+for row in reader:
+    # Save header row:
+    this_row_coords = [0,0,0]
+    if rownum == 0:
+        header = row
+    else:
+        colnum = 0
+        for col in row:
+            #print '%-8s: %s' % (header[colnum], col)
+
+            if header[colnum] == "X":
+                this_row_coords[0] = float(col) 
+
+            if header[colnum] == "Y":
+                this_row_coords[1] = float(col) 
+            
+            if header[colnum] == "Z":
+                this_row_coords[2] = float(col) 
+
+            colnum += 1
+             
+    sun_data.append(this_row_coords)
+    rownum += 1
+ 
+ifile.close()
+
 
 # have data...now model the scad.
 model_data = []
@@ -71,12 +107,14 @@ f.close()
 # trying a more sophisticated model
 # k-nearest neighbors
 # inverting space...filling the "space" with shape
+# returns a pySolid object.
 def hood(star_data):
     mock_stars = star_data
-    neighbors_list = []
     minimum_height = 10000 # used to calculate a base plane
     g = 1.01 # fudge factor to ensure intersections with each sphere
 
+    neighbors_list = []
+    
     # play with the leafsize here
     star_tree = scipy.spatial.cKDTree(mock_stars,leafsize=100)
     for star in mock_stars:
@@ -103,16 +141,19 @@ def hood(star_data):
         (-1 * minimum_height if minimum_height < 0 else 0) +5])(model_data)
 
     # make a base pedestal
-    u += cylinder(h=40, r=7) + cylinder(h=2, r=20)
+    #u += cylinder(h=40, r=7) + cylinder(h=2, r=20)
     return u
 
 
 # generate one 'hood
-u = hood(mock_data())
+# try with real data!!
+u = hood(sun_data)
 scad = scad_render(u)
 f = open('output.scad', 'w')
 f.write("$fn=30;\n"+scad)
 f.close()
+
+
 
 """
 # make several iterations
