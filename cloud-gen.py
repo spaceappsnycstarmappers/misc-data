@@ -30,13 +30,12 @@ model_data = []
 # the mock data is normalized...let's make this bigger
 # this is just the coordinate scale at the moment
 # lets presume this is mm.
-scale = 100
+scale = 50
 
 star_base_radius = 3.0
 column_radius = [2.0, 1.0]
 
 # this is the naive 'ball and stick' representation:
-"""
 for i, coord in enumerate(mock_stars):
     #print coord
     scaled_coord = [x*scale for x in coord]
@@ -45,7 +44,7 @@ for i, coord in enumerate(mock_stars):
     star_rand_scale = uniform(0.5, 1.25)
 
     s = translate(scaled_coord)(
-              sphere(star_rand_scale * star_base_radius),
+              translate([0,0,star_rand_scale*star_base_radius/2])(sphere(star_rand_scale * star_base_radius)),
               translate([0,0,-scaled_coord[2]])(
                   cylinder(r1=column_radius[0], r2=column_radius[1], h=scaled_coord[2])
                   )
@@ -53,10 +52,12 @@ for i, coord in enumerate(mock_stars):
     model_data.append(s)
 
 # combine all model_data and add a base plate, 
-u = translate([-scale/2, -scale/2, 0])(model_data,cube([scale, scale, 2]))
-"""
+u = translate([-scale/2, -scale/2, 0])(model_data,translate([-5,-5,0])(cube([scale+10, scale+10, 2])))
 
+"""
 # trying a more sophisticated model
+# k-nearest neighbors
+# inverting space...filling the "space" with shape
 neighbors_list = []
 # play with the leafsize here
 star_tree = scipy.spatial.cKDTree(mock_stars,leafsize=100)
@@ -66,7 +67,7 @@ for star in mock_stars:
     # print neighbors
     
     scaled_coord = [x*scale for x in mock_stars[neighbors[1][0]]]
-    # make a column between the current
+    # TODO: make a column between the current node and neighbor
     neighbors_list.append(
             # getting our location, and the distance as the sphere
             translate(scaled_coord)(sphere(scale*neighbors[0][1]))
@@ -75,6 +76,7 @@ model_data = neighbors_list
 
 # no need for a base plate here (but may need support)
 u = translate([-scale/2, -scale/2, 0])(model_data)
+"""
 
 scad = scad_render(u)
 #print scad
