@@ -1,15 +1,17 @@
+DROP TABLE hyg_stars;
+
 CREATE TABLE hyg_stars (
-	StarID int PRIMARY KEY,
+	StarID int,
 	BayerFlamsteed text,
 	ProperName text,
 	RA text,
 	Dec text,
-	Distance int,
+	Distance decimal,
 	PMRA text,
 	PMDec text,
-	Mag decimal,
+	Mag text,
 	Spectrum text,
-	ColorIndex decimal,
+	ColorIndex text,
 	X decimal,
 	Y decimal,
 	Z decimal,
